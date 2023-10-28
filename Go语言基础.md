@@ -125,7 +125,7 @@ a := [2][3]int{{1, 2, 3}, {4, 5, 6}}
 
 ### 切片Slice
 
-需要说明，切片并不是数组或数组指针。它通过内部指针和相关属性引用数组片段，以实现边长方案
+需要说明，切片并不是数组或数组指针。它通过内部指针和相关属性引用数组片段，以实现变长方案
 
 ```go
 1. 切片：切片是数组的一个引用，因此切片是引用类型。但自身是结构体，值拷贝传递。
@@ -201,13 +201,76 @@ for a > 0 {
 
 ## 指针
 
+Go语言中`&`为取地址符，放在一个变量前面就会返回相应变量的内存地址
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    var a int = 10
+    fmt.Printf("变量的地址：%x\n", &a)
+}
+```
+
+**什么是指针？**一个指针变量指向了一个值的内存地址，类似于变量和常量，在使用指针前你需要声明指针，指针声明格式如下:
+
+```go
+// var_type为指针类型，var_name为指针变量的名字
+var var_name *var_type
+
+// 更具体
+var ip *int // 指向整型
+var fp *float32 // 指向浮点型
+```
+
+### 空指针
+
+当一个指针被定义后没有分配到任何变量时，它的值为nil。nil指针也称为空指针。
+
+```go
+if ptr != nil // ptr不是空指针
+if ptr == nil // ptr是空指针
+```
+
 ## Map
 
 map是一种无序的基于key-value的数据结构，Go语言中的map是引用类型，必须初始化才能使用
 
+```go
+//map的定义
+var cnt map[string]int // 定义了一个键为string类型值为int类型的map，但是这个map并未初始化，不能使用
+
+// 一般使用make对map初始化
+cnt := make(map[string]int) // 与上述的定义了一个相同的map且进行了初始化，可以直接使用
+
+// map的遍历
+for key, value := range cnt {
+    fmt.Println(key, value)
+}
+```
+
 ### 结构体
 
 Go语言中没有“类”的概念，也不支持“类”的继承等面向对象的概念。Go语言中通过结构体的内嵌再配合接口比面向对象具有更高的扩展性和灵活性。
+
+```go
+// 结构体的定义
+type student struct {
+    name string
+    sex string
+    age int
+}
+
+func main() {
+    a := student{"hewei", "nan", 22}
+    // a := student{name:"hewei", age:22}
+    fmt.Println(a.name)
+    fmt.Println(a.sex)
+    fmt.Println(a.age)
+}
+```
 
 ## 函数
 
@@ -334,5 +397,59 @@ func main() {
 3. 数据库连接释放
 ```
 
-### 异常处理
+## 接口
+
+Go语言提供了一种特殊的数据类型-接口，它把所有的具有共性的方法定义在一起，任何其它类型只要实现了这些方法就是实现了这个接口。
+
+接口可以让我们将不同的类型绑定到一组公共方法上，从而实现**多态**和灵活的设计。
+
+Go语言中的接口是隐士实现的，也就是说，如果一个类型实现了一个接口定义的所有方法，那么它就自动的实现了该接口。因此我们可以通过将接口作为参数来实现对不同类型的调用，从而实现多态。
+
+```go
+/* 定义接口 */
+type interface_name interface {
+   method_name1 [return_type]
+   method_name2 [return_type]
+   method_name3 [return_type]
+   ...
+   method_namen [return_type]
+}
+
+/* 定义结构体 */
+type struct_name struct {
+   /* variables */
+}
+
+/* 实现接口方法 */
+func (struct_name_variable struct_name) method_name1() [return_type] {
+   /* 方法实现 */
+}
+...
+func (struct_name_variable struct_name) method_namen() [return_type] {
+   /* 方法实现*/
+}
+
+// 定义一个动物接口，有吃和睡觉两个方法
+type animal interface {
+	sleep()
+	eat()
+}
+
+// 定义一个老虎类，来实现上面的接口
+type tiger struct {
+}
+
+func (T tiger) eat() {
+	fmt.Println("tiger eat")
+}
+
+func (T tiger) sleep() {
+	fmt.Println("tiger sleep")
+}
+
+func main() {
+	var a tiger
+	a.sleep()
+}
+```
 
